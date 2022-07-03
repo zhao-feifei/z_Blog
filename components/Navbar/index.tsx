@@ -9,7 +9,7 @@ import Login from 'components/Login';
 
 const Navbar: NextPage = () => {
   const { pathname } = useRouter();
-  const [isShowLogin, setIsShowLogin] = useState(false);
+  const [isShowLogin, setIsShowLogin] = useState(true);
 
   const handleGotoEditorPage = () => {};
   const handleLogin = () => {
