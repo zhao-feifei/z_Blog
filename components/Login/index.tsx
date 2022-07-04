@@ -1,5 +1,6 @@
-import { ChangeEvent } from 'react';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
+import request from 'service/fetch';
+import { message } from 'antd';
 import styles from './index.module.scss';
 import CountDown from 'components/CountDown';
 
@@ -9,7 +10,7 @@ interface IProps {
 }
 
 const Login = (props: IProps) => {
-  const { isShow = false } = props;
+  const { isShow = false, onClose } = props;
   const [isShowVerifyCode, setIsShowVerifyCode] = useState(false);
 
   const [form, setForm] = useState({
@@ -17,9 +18,28 @@ const Login = (props: IProps) => {
     verify: '',
   });
 
-  const handleClose = () => {};
+  const handleClose = () => {
+    onClose && onClose();
+  };
   const handleGetVerifyCode = () => {
-    setIsShowVerifyCode(true);
+    // setIsShowVerifyCode(true);
+    if (!form?.phone) {
+      message.warning('请输入手机号');
+      return;
+    }
+
+    request
+      .post('/api/user/sendVerifyCode', {
+        to: form?.phone,
+        templateId: 1,
+      })
+      .then((res: any) => {
+        if (res.code === 0) {
+          setIsShowVerifyCode(true);
+        } else {
+          message.error(res?.msg || '未知错误');
+        }
+      });
   };
   const handleLogin = () => {};
   const handleOAuthGithub = () => {};
