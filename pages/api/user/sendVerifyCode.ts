@@ -1,13 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
 import { format } from 'date-fns';
 import md5 from 'md5';
 import { encode } from 'js-base64';
 import request from 'service/fetch';
+import { ISession } from 'pages/api/index';
+import { ironOptions } from 'config/index';
 
-export default async function sendVerifyCode(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default withIronSessionApiRoute(sendVerifyCode, ironOptions);
+
+async function sendVerifyCode(req: NextApiRequest, res: NextApiResponse) {
+  const session: ISession = req.session;
   const { to = '', templateId = 1 } = req.body;
   const AppId = '8a216da881ad97540181c81351f5047f';
   const AccountId = '8a216da881ad97540181c81351050478';
@@ -36,9 +39,22 @@ export default async function sendVerifyCode(
   );
 
   console.log(response);
+  const { statusCode, statusMsg,templateSMS } = response as any;
+  if (statusCode === '000000') {
+    session.verifyCode = verifyCode;
+    await session.save();
+      res.status(200).json({
+      code:statusCode,
+      mag:statusMsg,
+      data:{
+       templateSMS
+      }
+    })
+  }else {
+    res.status(200).json({
+      code:statusCode,
+      mag:statusMsg
+    })
+  }
 
-  res.status(200).json({
-    code: 0,
-    data: 123,
-  });
 }
