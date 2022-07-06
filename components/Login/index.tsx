@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 import request from 'service/fetch';
 import { message } from 'antd';
+import { useStore } from 'store/index';
 import styles from './index.module.scss';
 import CountDown from 'components/CountDown';
 
@@ -10,13 +11,15 @@ interface IProps {
 }
 
 const Login = (props: IProps) => {
+  const store = useStore();
   const { isShow = false, onClose } = props;
   const [isShowVerifyCode, setIsShowVerifyCode] = useState(false);
-
   const [form, setForm] = useState({
     phone: '',
     verify: '',
   });
+
+  console.log(store);
 
   const handleClose = () => {
     onClose && onClose();
@@ -48,6 +51,9 @@ const Login = (props: IProps) => {
       .post('/api/user/login', { ...form, identity_type: 'phone' })
       .then((res: any) => {
         if (res?.code === 0) {
+          store.user.setUserInfo(res?.data);
+          console.log(store);
+
           onClose && onClose();
         } else {
           message.error(res?.msg || '未知错误');

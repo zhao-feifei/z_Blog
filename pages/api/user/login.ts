@@ -12,7 +12,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
   const { phone = '', verify = '', identity_type = 'phone' } = req.body;
   const db = await prepareConnection();
 
-  const userRepo = db.getRepository(User);
+  // const userRepo = db.getRepository(User);
   const userAuthRepo = db.getRepository(UserAuth);
 
   if (String(session.verifyCode) == String(verify)) {
