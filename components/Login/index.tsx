@@ -34,14 +34,27 @@ const Login = (props: IProps) => {
         templateId: 1,
       })
       .then((res: any) => {
-        if (res.code === 0) {
+        console.log(res);
+
+        if (res?.code === 0) {
           setIsShowVerifyCode(true);
+        } else {
+          message.error(res?.msg || '未知错误handleGetVerifyCode');
+        }
+      });
+  };
+  const handleLogin = () => {
+    request
+      .post('/api/user/login', { ...form, identity_type: 'phone' })
+      .then((res: any) => {
+        if (res?.code === 0) {
+          onClose && onClose();
         } else {
           message.error(res?.msg || '未知错误');
         }
       });
   };
-  const handleLogin = () => {};
+
   const handleOAuthGithub = () => {};
   const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
