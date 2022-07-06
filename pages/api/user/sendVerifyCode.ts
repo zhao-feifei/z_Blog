@@ -21,7 +21,7 @@ async function sendVerifyCode(req: NextApiRequest, res: NextApiResponse) {
   const verifyCode = Math.floor(Math.random() * (9999 - 1000)) + 1000;
   const expireMinute = '5';
   const url = `https://app.cloopen.com:8883/2013-12-26/Accounts/${AccountId}/SMS/TemplateSMS?sig=${SigParameter}`;
-  console.log(url);
+  console.log(verifyCode);
 
   const response = await request.post(
     url,
@@ -37,9 +37,12 @@ async function sendVerifyCode(req: NextApiRequest, res: NextApiResponse) {
       },
     }
   );
-  console.log(verifyCode);
-  console.log(response);
+
+
   const { statusCode, statusMsg,templateSMS } = response as any;
+
+  console.log(statusCode);
+  
   if (statusCode === '000000') {
     session.verifyCode = verifyCode;
     await session.save();

@@ -1,22 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
+import { Cookie } from 'next-cookie';
 import { ironOptions } from 'config/index';
+import { ISession } from 'pages/api/index';
+import { setCookie } from 'utils/index';
 import { prepareConnection } from 'db/index';
 import { User, UserAuth } from 'db/entity/index';
-import { ISession } from 'pages/api/index';
 
 export default withIronSessionApiRoute(login, ironOptions);
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
+  const cookies = Cookie.fromApiRoute(req, res);
   const { phone = '', verify = '', identity_type = 'phone' } = req.body;
   const db = await prepareConnection();
-
-  // const userRepo = db.getRepository(User);
   const userAuthRepo = db.getRepository(UserAuth);
 
-  if (String(session.verifyCode) == String(verify)) {
-    //用户输入了正确的验证码
+  if (String(session.verifyCode) === String(verify)) {
+    // 验证码正确，在 user_auths 表中查找 identity_type 是否有记录
+    console.log('输入的验证码正确!!!!!');
+
     const userAuth = await userAuthRepo.findOne(
       {
         identity_type,
@@ -26,29 +29,38 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
         relations: ['user'],
       }
     );
-    console.log(1111);
-    console.log(userAuth);
 
     if (userAuth) {
-      //已经注册过
+      // 已存在的用户
+      console.log('此用户已存在！！！！！！');
+      console.log(userAuth);
+
       const user = userAuth.user;
       const { id, nickname, avatar } = user;
 
-      session.id = id;
+      session.userId = id;
       session.nickname = nickname;
       session.avatar = avatar;
 
       await session.save();
+
+      setCookie(cookies, { id, nickname, avatar });
+
       res?.status(200).json({
         code: 0,
-        msg: '登陆成功',
-        data: { userId: id, nickname, avatar },
+        msg: '登录成功',
+        data: {
+          userId: id,
+          nickname,
+          avatar,
+        },
       });
     } else {
-      //新用户
+      // 新用户，自动注册
+      console.log('此是新用户！！！！！！');
       const user = new User();
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`;
-      user.avatar = '/images/avatar.png';
+      user.avatar = '/images/avatar.jpg';
       user.job = '暂无';
       user.introduce = '暂无';
 
@@ -62,30 +74,26 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       const {
         user: { id, nickname, avatar },
       } = resUserAuth;
-      session.id = id;
+
+      session.userId = id;
       session.nickname = nickname;
       session.avatar = avatar;
 
       await session.save();
+
+      setCookie(cookies, { id, nickname, avatar });
+
       res?.status(200).json({
         code: 0,
-        msg: '登陆成功',
-        data: { userId: id, nickname, avatar },
+        msg: '登录成功',
+        data: {
+          userId: id,
+          nickname,
+          avatar,
+        },
       });
     }
   } else {
-    res?.status(200).json({
-      code: -1,
-      msg: '验证码错误',
-    });
+    res?.status(200).json({ code: -1, msg: '验证码错误' });
   }
-  console.log('结束');
-  console.log('phone');
-  console.log('verify');
-
-  res.status(200).json({
-    phone,
-    verify,
-    code: 0,
-  });
 }

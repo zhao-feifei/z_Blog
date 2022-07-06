@@ -19,8 +19,6 @@ const Login = (props: IProps) => {
     verify: '',
   });
 
-  console.log(store);
-
   const handleClose = () => {
     onClose && onClose();
   };
@@ -48,12 +46,14 @@ const Login = (props: IProps) => {
   };
   const handleLogin = () => {
     request
-      .post('/api/user/login', { ...form, identity_type: 'phone' })
+      .post('/api/user/login', {
+        ...form,
+        identity_type: 'phone',
+      })
       .then((res: any) => {
         if (res?.code === 0) {
+          // 登录成功
           store.user.setUserInfo(res?.data);
-          console.log(store);
-
           onClose && onClose();
         } else {
           message.error(res?.msg || '未知错误');
