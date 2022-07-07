@@ -4,6 +4,7 @@ import { message } from 'antd';
 import { useStore } from 'store/index';
 import styles from './index.module.scss';
 import CountDown from 'components/CountDown';
+import { observer } from 'mobx-react-lite';
 
 interface IProps {
   isShow: boolean;
@@ -60,8 +61,16 @@ const Login = (props: IProps) => {
         }
       });
   };
-
-  const handleOAuthGithub = () => {};
+  // 8ed73a12a49dfb9ff6ddefd8f3a194c6002ac140
+  // 026f7585e1b658001732
+  const handleOAuthGithub = () => {
+    const githubClientid = '026f7585e1b658001732';
+    const redirectUrl = 'http://localhost:3000/api/oauth/redirect';
+    window.open(
+      `https://github.com/login/oauth/authorize?client_id=${githubClientid}&redirect_uri=${redirectUrl}`,
+      'top=10,left=10,width=400,height=200'
+    );
+  };
   const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({
@@ -122,4 +131,4 @@ const Login = (props: IProps) => {
     </div>
   ) : null;
 };
-export default Login;
+export default observer(Login);

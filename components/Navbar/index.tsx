@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NextPage } from 'next';
+import { observer } from 'mobx-react-lite';
 import { navs } from './config';
 import Link from 'next/link';
 import styles from './index.module.scss';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/router';
 import { Button, Dropdown, Avatar, Menu } from 'antd';
 import Login from 'components/Login';
 import { useStore } from 'store/index';
+import request from 'service/fetch';
 
 const Navbar: NextPage = () => {
   const store = useStore();
@@ -21,11 +23,20 @@ const Navbar: NextPage = () => {
   const handleClose = () => {
     setIsShowLogin(false);
   };
+  const handleGotoPersonalPage = () => {};
+  const handleLogout = () => {
+    request.post('/api/user/logout').then((res: any) => {
+      if (res?.code === 0) {
+        store.user.setUserInfo({});
+      }
+    });
+  };
+
   const renderDropdownMenu = () => {
     return (
       <Menu>
-        <Menu.Item>个人主页</Menu.Item>
-        <Menu.Item>退出</Menu.Item>
+        <Menu.Item onClick={handleGotoPersonalPage}>个人主页</Menu.Item>
+        <Menu.Item onClick={handleLogout}>退出</Menu.Item>
       </Menu>
     );
   };
@@ -57,4 +68,4 @@ const Navbar: NextPage = () => {
     </div>
   );
 };
-export default Navbar;
+export default observer(Navbar);
