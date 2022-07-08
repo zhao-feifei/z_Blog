@@ -5,25 +5,33 @@ import { navs } from './config';
 import Link from 'next/link';
 import styles from './index.module.scss';
 import { useRouter } from 'next/router';
-import { Button, Dropdown, Avatar, Menu } from 'antd';
+import { Button, Dropdown, Avatar, Menu, message } from 'antd';
 import Login from 'components/Login';
 import { useStore } from 'store/index';
 import request from 'service/fetch';
 
 const Navbar: NextPage = () => {
   const store = useStore();
-  const { pathname } = useRouter();
+  const { pathname, push } = useRouter();
   const [isShowLogin, setIsShowLogin] = useState(false);
   const { avatar, userId } = store.user.userInfo;
 
-  const handleGotoEditorPage = () => {};
+  const handleGotoEditorPage = () => {
+    if (userId) {
+      push('/editor/new');
+    } else {
+      message.warning('请先登录！');
+    }
+  };
   const handleLogin = () => {
     setIsShowLogin(true);
   };
   const handleClose = () => {
     setIsShowLogin(false);
   };
-  const handleGotoPersonalPage = () => {};
+  const handleGotoPersonalPage = () => {
+    push(`/user/${userId}`);
+  };
   const handleLogout = () => {
     request.post('/api/user/logout').then((res: any) => {
       if (res?.code === 0) {

@@ -8,6 +8,7 @@ import { setCookie } from 'utils/index';
 import { prepareConnection } from 'db/index';
 import { User, UserAuth } from 'db/entity/index';
 
+
 export default withIronSessionApiRoute(redirect, ironOptions);
 // 8ed73a12a49dfb9ff6ddefd8f3a194c6002ac140
 // 026f7585e1b658001732
@@ -17,21 +18,24 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code || {};
   console.log(111111);
   console.log(code);
-  const githubClientID ='026f7585e1b658001732';
-  const githubClientSecret ='8ed73a12a49dfb9ff6ddefd8f3a194c6002ac140';
-  const url = `https://github.com/login/oauth/access_token?client_id=${githubClientID}&client_secret=${githubClientSecret}&code=${code}`;
+  const redirect_uri='http://localhost:3000/api/oauth/redirect'
+  const githubClientID ='45179a660ee8a3a73bc603c902e22bc7f9194f2963d2fb1f9f403896ffa5abfb';
+  const githubClientSecret ='943d2aeaef2b1fa6254c266cea1afdeddd870dae2f4fc2728240c6cc2bf1aa07';
+  // const url = `https://github.com/login/oauth/access_token?client_id=${githubClientID}&client_secret=${githubClientSecret}&code=${code}`;
+  const url = `https://gitee.com/oauth/token?grant_type=authorization_code&code=${code}&client_id=${githubClientID}&redirect_uri=${redirect_uri}&client_secret=${githubClientSecret}`;
   console.log('下面是请求的url');
   console.log(url);
 
  const result= await request.post(
     url,
-    {},
-    {
-      headers: {
-        accept: 'application/json',
-      },
-    }
+    // {},
+    // {
+    //   headers: {
+    //     accept: 'application/json',
+    //   },
+    // }
   )
+  
 
   console.log(222222);
   console.log(result);
@@ -41,12 +45,14 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
   console.log(33333);
   console.log(access_token);
 
-  const githubUserInfo= await  request.get('https://api.github.com/user',{
-    headers: {
-      accept: 'application/json',
-      Authorization:`token ${access_token}`
-    }
-  })
+  // const githubUserInfo= await  request.get('https://api.github.com/user',{
+  //   headers: {
+  //     accept: 'application/json',
+  //     Authorization:`token ${access_token}`
+  //   }
+  // })
+  const githubUserInfo= await  request.get(`https://gitee.com/api/v5/user?access_token=${access_token}`)
+
   console.log(githubUserInfo);
 
   const cookies=Cookie.fromApiRoute(req,res);
@@ -79,9 +85,12 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
 
     setCookie(cookies, { id, nickname, avatar });
 
-    res.writeHead(302,{
-      Location:'/'
-    });
+    // res.writeHead(302,{
+    //   Location:''
+    // });
+    res?.status(200).json({   
+        msg: '登录成功',
+      });
   }else{
     //创建新用户
    const {login,avatar_url} =githubUserInfo as any;
@@ -105,7 +114,7 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
     session.userId = id;
     session.nickname = nickname;
     session.avatar = avatar;
-
+    
     await session.save();
 
     setCookie(cookies, {id, nickname, avatar });
@@ -113,8 +122,9 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
     console.log('cookie设置成功');
     console.log(id,nickname,avatar);
 
-    res.writeHead(302,{
-      Location:'/'
-    });
+ 
+   res?.status(200).json({   
+        msg: '登录成功',
+      });
   }
 }

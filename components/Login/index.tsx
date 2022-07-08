@@ -63,13 +63,20 @@ const Login = (props: IProps) => {
   };
   // 8ed73a12a49dfb9ff6ddefd8f3a194c6002ac140
   // 026f7585e1b658001732
-  const handleOAuthGithub = () => {
-    const githubClientid = '026f7585e1b658001732';
+  const handleOAuthGithub = async () => {
+    const githubClientid =
+      '45179a660ee8a3a73bc603c902e22bc7f9194f2963d2fb1f9f403896ffa5abfb';
     const redirectUrl = 'http://localhost:3000/api/oauth/redirect';
+
+    // window.location.href = `https://gitee.com/oauth/authorize?client_id=${githubClientid}&redirect_uri=${redirectUrl}&response_type=code`;
+
+    // window.location.href = `https://gitee.com/oauth/authorize?client_id=${githubClientid}&redirect_uri=${redirectUrl}&response_type=code`;
     window.open(
-      `https://github.com/login/oauth/authorize?client_id=${githubClientid}&redirect_uri=${redirectUrl}`,
-      'top=10,left=10,width=400,height=200'
+      `https://gitee.com/oauth/authorize?client_id=${githubClientid}&redirect_uri=${redirectUrl}&response_type=code`
     );
+    setTimeout(() => {
+      window.location.href = 'http://localhost:3000/';
+    }, 3000);
   };
   const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -131,4 +138,5 @@ const Login = (props: IProps) => {
     </div>
   ) : null;
 };
+
 export default observer(Login);
