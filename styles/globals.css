@@ -4,6 +4,13 @@ body {
   background-color: aliceblue;
 }
 
+.content-layout {
+  width: 1080;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+}
+
 /* body,
 div,
 p,
