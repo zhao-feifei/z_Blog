@@ -33,7 +33,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
     if (userAuth) {
       // 已存在的用户
       console.log('此用户已存在！！！！！！');
-      console.log(userAuth);
+      // console.log(userAuth);
 
       const user = userAuth.user;
       const { id, nickname, avatar } = user;
