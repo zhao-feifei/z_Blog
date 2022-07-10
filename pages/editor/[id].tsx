@@ -6,7 +6,6 @@ import  styles  from './index.module.scss';
 import { Input ,Button,message } from 'antd';
 import request from 'service/fetch';
 import { observer } from 'mobx-react-lite';
-import {useStore} from 'store/index'
 import {useRouter} from 'next/router'
 import { prepareConnection } from 'db/index';
 import { Article } from 'db/entity';
@@ -37,10 +36,8 @@ export async function getServerSideProps({ params }: any) {
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 function ModifyEditor({article}:IProps) {
-  const store=  useStore();
   const {push,query} =useRouter();
   const articleId=query.id;
-  const {  userId } = store.user.userInfo;
   const [content, setContent] = useState(article?.title||'');
   const [title,setTitle]=useState(article?.content||'')
 

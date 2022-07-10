@@ -14,3 +14,10 @@ export const EXCEPTION_ARTICLE = {
     mag: '未找到文章',
   },
 };
+
+export const EXCEPTION_COMMENT = {
+  PUBLISH_FAILED: {
+    code: 4001,
+    msg: '发表失败',
+  },
+};
