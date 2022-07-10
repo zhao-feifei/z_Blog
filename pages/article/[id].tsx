@@ -21,7 +21,7 @@ export async function getServerSideProps({ params }: any) {
   const articleRepo = db.getRepository(Article);
   const article = await articleRepo.findOne({
     where: { id: articleId },
-    relations: ['user','comments','comments.user'],
+    relations: ['user', 'comments', 'comments.user'],
   });
   //阅读次数
   if (article) {
@@ -44,6 +44,7 @@ const ArticleDetail = (props: IProps) => {
     user: { nickname, avatar, id },
   } = article;
   const [inputVal, setInputVal] = useState('');
+  const [comments, setComments] = useState(article?.comments || []);
 
   const handleComment = () => {
     request
@@ -54,6 +55,19 @@ const ArticleDetail = (props: IProps) => {
       .then((res: any) => {
         if (res.code === 0) {
           message.success('发表成功');
+          const newComments = [
+            {
+              id: Math.random(),
+              create_time: new Date(),
+              update_time: new Date(),
+              content: inputVal,
+              user: {
+                avatar: loginUserInfo?.avatar,
+                nickname: loginUserInfo?.nickname,
+              },
+            },
+          ].concat([...comments]);
+          setComments(newComments);
           setInputVal('');
         } else {
           message.error('发表失败');
@@ -105,7 +119,25 @@ const ArticleDetail = (props: IProps) => {
             </div>
           )}
           <Divider></Divider>
-          <div className={}></div>
+          <div className={styles.display}>
+            {comments?.map((comment: any) => (
+              <div className={styles.wrapper} key={comment?.id}>
+                <Avatar src={comment?.user?.avatar} size={40}></Avatar>
+                <div className={styles.info}>
+                  <div className={styles.name}>
+                    <div>{comment?.user?.name}</div>
+                    <div className={styles.date}>
+                      {format(
+                        new Date(comment?.update_time),
+                        'yyyy-MM-dd hh:mm:ss'
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.content}>{comment?.content}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
