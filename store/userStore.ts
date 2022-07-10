@@ -2,6 +2,7 @@ export type IUserInfo = {
   userId?: number | null,
   nickname?: string,
   avatar?: string,
+  id?: number,
 };
 
 export interface IUserStore {

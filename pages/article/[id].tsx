@@ -13,7 +13,7 @@ interface IProps {
   article: IArticle;
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params }: any) {
   const articleId = params?.id;
   const db = await prepareConnection();
   const articleRepo = db.getRepository(Article);
@@ -21,7 +21,7 @@ export async function getServerSideProps({ params }) {
     where: { id: articleId },
     relations: ['user'],
   });
-
+  //阅读次数
   if (article) {
     article.views = article?.views + 1;
     await articleRepo.save(article);

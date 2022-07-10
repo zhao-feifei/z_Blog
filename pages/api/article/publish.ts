@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
-import { Cookie } from 'next-cookie';
 import { ironOptions } from 'config/index';
 import { ISession } from 'pages/api/index';
-import { setCookie } from 'utils/index';
 import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity/index';
 import { EXCEPTION_ARTICLE } from 'pages/api/config/codes';
